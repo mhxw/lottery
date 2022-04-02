@@ -10,12 +10,12 @@ contract LuckyDraw is Ownable {
   uint8 internal requestStatus;
   uint8 internal fetchStatus;
 
-  uint128 internal constant TOTAL_GRAND_PRIZE = 1;
-  uint128 internal constant TOTAL_FIRST_PRIZE = 4;
-  uint128 internal constant TOTAL_SECOND_PRIZE = 15;
-  uint128 internal constant TOTAL_THIRD_PRIZE = 200;
-  uint128 internal constant TOTAL_FOURTH_PRIZE = 1000;
-  uint128 internal constant TOTAL_PARTICIPATION = 180000;
+  uint32 internal constant TOTAL_GRAND_PRIZE = 1;
+  uint32 internal constant TOTAL_FIRST_PRIZE = 4;
+  uint32 internal constant TOTAL_SECOND_PRIZE = 15;
+  uint32 internal constant TOTAL_THIRD_PRIZE = 200;
+  uint32 internal constant TOTAL_FOURTH_PRIZE = 1000;
+  uint32 internal constant TOTAL_PARTICIPATION = 180000;
 
   bytes32 public randomnessForGrandPrize;
   bytes32 public randomnessForFirstPrize;
@@ -351,7 +351,7 @@ contract LuckyDraw is Ownable {
    */
   function random(bytes32 randomValue, uint256 i) internal view returns (uint256) {
     bytes32 randomSeed = keccak256(abi.encodePacked(randomValue, i, block.number, block.timestamp));
-    return uint256(random(180000, i, randomSeed));
+    return uint256(random(TOTAL_PARTICIPATION, i, randomSeed));
   }
 
   /**
