@@ -20,12 +20,12 @@ before(async () => {
   defaultAccount = users.roles.defaultAccount
 
   mockWitnetRandomnessFactory = await ethers.getContractFactory(
-    'contracts/tests/MockWitnetRandomness.sol:MockWitnetRandomness',
-    defaultAccount,
+      'contracts/tests/MockWitnetRandomness.sol:MockWitnetRandomness',
+      defaultAccount,
   )
   lotteryFactory = await ethers.getContractFactory(
-    'contracts/LuckyDraw.sol:LuckyDraw',
-    defaultAccount,
+      'contracts/LuckyDraw.sol:LuckyDraw',
+      defaultAccount,
   )
 })
 
@@ -38,11 +38,11 @@ describe('LuckyDraw', () => {
 
   beforeEach(async () => {
     mockWitnetRandomness = await mockWitnetRandomnessFactory
-      .connect(personas.Carol)
-      .deploy()
+        .connect(personas.Carol)
+        .deploy()
     lottery = await lotteryFactory
-      .connect(personas.Carol)
-      .deploy(mockWitnetRandomness.address)
+        .connect(personas.Carol)
+        .deploy(mockWitnetRandomness.address)
   })
 
   it('has a limited public interface [ @skip-coverage ]', () => {
@@ -86,7 +86,7 @@ describe('LuckyDraw', () => {
 
     it('set zero addr', async () => {
       await expect(
-        lotteryFactory.connect(personas.Carol).deploy(constants.AddressZero),
+          lotteryFactory.connect(personas.Carol).deploy(constants.AddressZero),
       ).to.be.revertedWith('Lottery: the witnet is the zero address')
     })
   })
@@ -94,8 +94,8 @@ describe('LuckyDraw', () => {
   describe('#getRandomNumber', () => {
     it('not request and fetch', async () => {
       await evmRevert(
-        lottery.connect(personas.Carol).getRandomNumber(0),
-        'Lottery: pending randomize',
+          lottery.connect(personas.Carol).getRandomNumber(0),
+          'Lottery: pending randomize',
       )
     })
   })
@@ -103,15 +103,15 @@ describe('LuckyDraw', () => {
   describe('#pickWinner', () => {
     it('the fourth prize has not been drawn', async () => {
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(3),
-        'Lottery: the fourth prize has not been drawn',
+          lottery.connect(personas.Carol).pickWinner(3),
+          'Lottery: the fourth prize has not been drawn',
       )
     })
 
     it('pending randomize', async () => {
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(4),
-        'Lottery: pending randomize',
+          lottery.connect(personas.Carol).pickWinner(4),
+          'Lottery: pending randomize',
       )
     })
   })
@@ -119,54 +119,54 @@ describe('LuckyDraw', () => {
   describe('#requestnumber', () => {
     it('request random number not value', async () => {
       await evmRevert(
-        lottery.connect(personas.Carol).requestRandomNumber(4),
-        'Lottery: the value must be greater than zero',
+          lottery.connect(personas.Carol).requestRandomNumber(4),
+          'Lottery: the value must be greater than zero',
       )
     })
 
     it('request random number of err number', async () => {
       await evmRevert(
-        lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(3, { value: ethers.utils.parseEther('0.5') }),
-        'Lottery: it is not yet the turn of the third prize operation or the third prize has been operated',
+          lottery
+              .connect(personas.Carol)
+              .requestRandomNumber(3, { value: ethers.utils.parseEther('0.5') }),
+          'Lottery: it is not yet the turn of the third prize operation or the third prize has been operated',
       )
     })
 
     it('not randomness', async () => {
       await evmRevert(
-        lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(3, { value: ethers.utils.parseEther('0.5') }),
-        'Lottery: it is not yet the turn of the third prize operation or the third prize has been operated',
+          lottery
+              .connect(personas.Carol)
+              .requestRandomNumber(3, { value: ethers.utils.parseEther('0.5') }),
+          'Lottery: it is not yet the turn of the third prize operation or the third prize has been operated',
       )
     })
 
     it('request random number success', async () => {
       await evmRevert(
-        lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(0, { value: ethers.utils.parseEther('0.5') }),
-        'Lottery: it is not yet the turn of the grand prize operation or the grand prize has been operated',
+          lottery
+              .connect(personas.Carol)
+              .requestRandomNumber(0, { value: ethers.utils.parseEther('0.5') }),
+          'Lottery: it is not yet the turn of the grand prize operation or the grand prize has been operated',
       )
 
       await evmRevert(
-        lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(1, { value: ethers.utils.parseEther('0.5') }),
-        'Lottery: it is not yet the turn of the first prize operation or the first prize has been operated',
+          lottery
+              .connect(personas.Carol)
+              .requestRandomNumber(1, { value: ethers.utils.parseEther('0.5') }),
+          'Lottery: it is not yet the turn of the first prize operation or the first prize has been operated',
       )
 
       await evmRevert(
-        lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(2, { value: ethers.utils.parseEther('0.5') }),
-        'Lottery: it is not yet the turn of the second prize operation or the second prize has been operated',
+          lottery
+              .connect(personas.Carol)
+              .requestRandomNumber(2, { value: ethers.utils.parseEther('0.5') }),
+          'Lottery: it is not yet the turn of the second prize operation or the second prize has been operated',
       )
 
       const tx = await lottery
-        .connect(personas.Carol)
-        .requestRandomNumber(4, { value: ethers.utils.parseEther('0.5') })
+          .connect(personas.Carol)
+          .requestRandomNumber(4, { value: ethers.utils.parseEther('0.5') })
 
       const block = await ethers.provider.getBlock(tx.blockHash ?? '')
 
@@ -174,8 +174,8 @@ describe('LuckyDraw', () => {
 
       for (let i = 3; i >= 0; i--) {
         await lottery
-          .connect(personas.Carol)
-          .requestRandomNumber(i, { value: ethers.utils.parseEther('0.5') })
+            .connect(personas.Carol)
+            .requestRandomNumber(i, { value: ethers.utils.parseEther('0.5') })
       }
 
       for (let i = 4; i >= 0; i--) {
@@ -184,28 +184,28 @@ describe('LuckyDraw', () => {
 
       const randomValue = await lottery.getRandomNumber(4)
       assert.equal(
-        BigNumber.from(await lottery.randomnessForFourthPrize()).toNumber,
-        BigNumber.from(randomValue).toNumber,
+          await lottery.randomnessForFourthPrize(),
+          randomValue,
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(0),
-        'Lottery: the first prize has not been drawn',
+          lottery.connect(personas.Carol).pickWinner(0),
+          'Lottery: the first prize has not been drawn',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(1),
-        'Lottery: the second prize has not been drawn',
+          lottery.connect(personas.Carol).pickWinner(1),
+          'Lottery: the second prize has not been drawn',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(2),
-        'Lottery: the third prize has not been drawn',
+          lottery.connect(personas.Carol).pickWinner(2),
+          'Lottery: the third prize has not been drawn',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(3),
-        'Lottery: the fourth prize has not been drawn',
+          lottery.connect(personas.Carol).pickWinner(3),
+          'Lottery: the fourth prize has not been drawn',
       )
 
       assert.equal(await lottery.isFinished(4), false)
@@ -231,41 +231,41 @@ describe('LuckyDraw', () => {
       assert.equal(await lottery.drawStatus(), 1)
       const pickWinner1Tx = await lottery.connect(personas.Carol).pickWinner(1)
       await expect(pickWinner1Tx)
-        .to.emit(lottery, 'WinnerListUpdate')
-        .withArgs(1, 1, 3, firstPrizeNum, await lottery.getWinnerList(1))
+          .to.emit(lottery, 'WinnerListUpdate')
+          .withArgs(1, 1, 3, firstPrizeNum, await lottery.getWinnerList(1))
       assert.equal(await lottery.isFinished(1), true)
 
       assert.equal(await lottery.isFinished(0), false)
       assert.equal(await lottery.drawStatus(), 0)
       const pickWinner0Tx = await lottery.connect(personas.Carol).pickWinner(0)
       await expect(pickWinner0Tx)
-        .to.emit(lottery, 'WinnerListUpdate')
-        .withArgs(0, 1, 0, grandPrizeNum, await lottery.getWinnerList(0))
+          .to.emit(lottery, 'WinnerListUpdate')
+          .withArgs(0, 1, 0, grandPrizeNum, await lottery.getWinnerList(0))
       assert.equal(await lottery.isFinished(0), true)
       assert.equal(await lottery.drawStatus(), 5)
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(4),
-        'Lottery: the prize has been drawn out',
+          lottery.connect(personas.Carol).pickWinner(4),
+          'Lottery: the prize has been drawn out',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(3),
-        'Lottery: the prize has been drawn out',
+          lottery.connect(personas.Carol).pickWinner(3),
+          'Lottery: the prize has been drawn out',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(2),
-        'Lottery: the prize has been drawn out',
+          lottery.connect(personas.Carol).pickWinner(2),
+          'Lottery: the prize has been drawn out',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(1),
-        'Lottery: the prize has been drawn out',
+          lottery.connect(personas.Carol).pickWinner(1),
+          'Lottery: the prize has been drawn out',
       )
 
       await evmRevert(
-        lottery.connect(personas.Carol).pickWinner(0),
-        'Lottery: the prize has been drawn out',
+          lottery.connect(personas.Carol).pickWinner(0),
+          'Lottery: the prize has been drawn out',
       )
     })
   })
