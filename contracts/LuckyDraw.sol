@@ -101,7 +101,7 @@ contract LuckyDraw is Ownable {
       );
       requestStatus = 3;
       blockForThirdPrize = block.number;
-    } else if (prizeType == 4) {
+    } else {
       require(
         requestStatus == 0,
         "Lottery: it is not yet the turn of the fourth prize operation or the fourth prize has been operated"
@@ -275,7 +275,7 @@ contract LuckyDraw is Ownable {
       require(listForFourthPrize.length == TOTAL_FOURTH_PRIZE, "Lottery: the fourth prize has not been drawn");
       require(listForThirdPrize.length < TOTAL_THIRD_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForThird(prizeType);
-    } else if (prizeType == 4) {
+    } else {
       require(listForFourthPrize.length < TOTAL_FOURTH_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForFourth(prizeType);
     }

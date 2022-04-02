@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "witnet-solidity-bridge/contracts/interfaces/IWitnetRandomness.sol";
 
-contract LuckyDraw is Ownable {
+contract MockLuckyDraw is Ownable {
   uint8 internal drawTimesForThirdPrize;
   uint8 internal drawTimesForFourthPrize;
   uint8 internal requestStatus;
@@ -59,7 +59,7 @@ contract LuckyDraw is Ownable {
    * @notice Constructor
    */
   constructor() {
-    witnet = IWitnetRandomness(0x31178DA4C4A14010eD66dF88f2d5d8337845ffFa);
+    witnet = IWitnetRandomness(0x76c72518060952FAec3f90666F047e39E3333f7E);
 
     //test
     randomnessForGrandPrize = 0xb3c65dd55b64ae0138c6a53d7bab0fe331950fb0e6f6d602d8921fb8084abed1;
@@ -120,7 +120,7 @@ contract LuckyDraw is Ownable {
       );
       requestStatus = 3;
       blockForThirdPrize = block.number;
-    } else if (prizeType == 4) {
+    } else {
       require(
         requestStatus == 0,
         "Lottery: it is not yet the turn of the fourth prize operation or the fourth prize has been operated"
@@ -294,7 +294,7 @@ contract LuckyDraw is Ownable {
       require(listForFourthPrize.length == TOTAL_FOURTH_PRIZE, "Lottery: the fourth prize has not been drawn");
       require(listForThirdPrize.length < TOTAL_THIRD_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForThird(prizeType);
-    } else if (prizeType == 4) {
+    } else {
       require(listForFourthPrize.length < TOTAL_FOURTH_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForFourth(prizeType);
     }
