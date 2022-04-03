@@ -120,13 +120,15 @@ contract MockLuckyDraw is Ownable {
       );
       requestStatus = 3;
       blockForThirdPrize = block.number;
-    } else {
+    } else if (prizeType == 4) {
       require(
         requestStatus == 0,
         "Lottery: it is not yet the turn of the fourth prize operation or the fourth prize has been operated"
       );
       requestStatus = 4;
       blockForFourthPrize = block.number;
+    } else {
+      revert("Lottery: the prize does not exist");
     }
     blockForLatestRandomizing = block.number;
     uint256 _usedFunds = witnet.randomize{value: msg.value}();
@@ -170,13 +172,15 @@ contract MockLuckyDraw is Ownable {
       );
       fetchStatus = 4;
       blockNumber = blockForFourthPrize;
-    } else {
+    } else if (prizeType == 0) {
       require(
         fetchStatus == 1,
         "Lottery: it is not yet the turn of the grand prize operation or the grand prize has been operated"
       );
       fetchStatus = 5;
       blockNumber = blockForGrandPrize;
+    } else {
+      revert("Lottery: the prize does not exist");
     }
     require(blockNumber > 0, "Lottery: pending randomize");
     bytes32 randomValue = witnet.getRandomnessAfter(blockNumber);
@@ -294,47 +298,49 @@ contract MockLuckyDraw is Ownable {
       require(listForFourthPrize.length == TOTAL_FOURTH_PRIZE, "Lottery: the fourth prize has not been drawn");
       require(listForThirdPrize.length < TOTAL_THIRD_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForThird(prizeType);
-    } else {
+    } else if (prizeType == 4) {
       require(listForFourthPrize.length < TOTAL_FOURTH_PRIZE, "Lottery: the prize has been drawn out");
       pickWinnerForFourth(prizeType);
+    } else {
+      revert("Lottery: the prize does not exist");
     }
   }
 
   /// @dev Returns index of the Most Significant Bit of the given number, applying De Bruijn O(1) algorithm.
   function _msbDeBruijn32(uint32 _v) internal pure returns (uint8) {
     uint8[32] memory _bitPosition = [
-    0,
-    9,
-    1,
-    10,
-    13,
-    21,
-    2,
-    29,
-    11,
-    14,
-    16,
-    18,
-    22,
-    25,
-    3,
-    30,
-    8,
-    12,
-    20,
-    28,
-    15,
-    17,
-    24,
-    7,
-    19,
-    27,
-    23,
-    6,
-    26,
-    5,
-    4,
-    31
+      0,
+      9,
+      1,
+      10,
+      13,
+      21,
+      2,
+      29,
+      11,
+      14,
+      16,
+      18,
+      22,
+      25,
+      3,
+      30,
+      8,
+      12,
+      20,
+      28,
+      15,
+      17,
+      24,
+      7,
+      19,
+      27,
+      23,
+      6,
+      26,
+      5,
+      4,
+      31
     ];
     _v |= _v >> 1;
     _v |= _v >> 2;
